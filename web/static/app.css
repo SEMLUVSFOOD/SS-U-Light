@@ -167,6 +167,7 @@ h3 { margin: 0; font-size: 13px; letter-spacing: .12em; text-transform: uppercas
 
 .slider { display: grid; gap: 6px; margin-top: 14px; font-size: 14px; font-weight: 600; }
 .slider span { display: flex; justify-content: space-between; }
+.num { min-height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-strong); padding: 0 14px; font-weight: 700; }
 input[type="range"] { width: 100%; height: 36px; accent-color: var(--accent); }
 
 .presets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

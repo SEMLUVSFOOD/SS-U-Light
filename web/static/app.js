@@ -108,7 +108,7 @@ $$(".plan").forEach(b => b.addEventListener("click", () => {
 $("#dwell").addEventListener("input", e => { $("#dwell-out").textContent = (e.target.value / 1000).toFixed(1) + " s"; });
 $("#d-start").addEventListener("click", async () => {
   if (ui.plan === "learn") toast("Now switch the stick ON!");
-  await api("/api/discovery/start", { plan: ui.plan, dwell_ms: +$("#dwell").value });
+  await api("/api/discovery/start", { plan: ui.plan, dwell_ms: +$("#dwell").value, start: Math.max(0, (+$("#d-from").value || 1) - 1) });
   refresh();
 });
 $("#d-pause").addEventListener("click", () => api("/api/discovery/pause", {}).then(refresh));

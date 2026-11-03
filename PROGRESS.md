@@ -26,7 +26,7 @@ _Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original
 - [x] `git clone` + `./setup/install.sh`: service + sudoers OK, config.txt edited
 - [x] Diagnosed rpitx build failure on trixie: no `libraspberrypi-dev` → apt line aborts (no fftw) and
       librpitx can't link `-lbcm_host`. librpitx has its own bcm_host functions in `rpi.c`, so we link without it.
-- [ ] Run `setup/build-rpitx.sh` on the Pi → `sendook` + `tune` in /usr/local/bin (fallback: Legacy/Bookworm 32-bit image)
+- [x] Ran `setup/build-rpitx.sh` on the Pi → `sendook` + `tune` in /usr/local/bin; `sudo -n sendook -h` works
 - [ ] Power off → solder the 17 cm wire to **pin 7 (GPIO 4)** → power on
 - [ ] Smoke test: `python3 -m tx.cli tone` runs without errors
 - [ ] Confirm RF with a receiver (SDR / Flipper / 433 module), if I can borrow one
@@ -34,6 +34,7 @@ _Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original
 - [ ] Dashboard reachable at http://ulight.local:8080, pill says LIVE
 
 ## Phase 2 — discovery
+- [ ] Quick terminal pass: `python3 -m tx.cli sweep all` (Ctrl+C on a reaction, note the #)
 - [ ] Timing scan with the stick next to the Pi
 - [ ] Learn mode (stick off → Start → stick on)
 - [ ] EV1527 defaults / PT2262 / HS2303 sweeps
