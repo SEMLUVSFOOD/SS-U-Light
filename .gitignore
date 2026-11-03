@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Runtime logs / temp radio files
+*.log
+web/tx_log.jsonl
+/tmp/
+
+# Secrets — never commit these
+.env
+*.pem
+id_rsa*
+id_ed25519*
+wpa_supplicant.conf
+*.nmconnection
+
+# Mac
+.DS_Store
