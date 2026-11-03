@@ -39,13 +39,17 @@ PT_DATA = ["1000", "0100", "0010", "0001", "1100", "0011", "1111"]
 _ABBR = {"address": "a", "data": "d", "t_us": "t", "trits": "k", "bits": "b"}
 
 
-def _cand(proto: str, label: str, repeats: int = 8, **params) -> Dict:
+def _cand(proto: str, label: str, repeats: int = 8, freq_hz: Optional[int] = None, **params) -> Dict:
     """Make a candidate with a stable, readable id like 'ev1527-a0-d1-t350'."""
     parts = []
     for k, v in sorted(params.items()):
         parts.append(_ABBR.get(k, k) + (f"{v:x}" if k == "address" else str(v)))
-    return {"id": "-".join([proto] + parts), "proto": proto, "params": params,
-            "label": label, "repeats": repeats}
+    c = {"id": "-".join([proto] + parts), "proto": proto, "params": params,
+         "label": label, "repeats": repeats}
+    if freq_hz is not None:
+        c["id"] += f"-f{freq_hz // 1000}"
+        c["freq_hz"] = freq_hz
+    return c
 
 
 def ev1527_sweep(t_list: Iterable[int] = T_GRID, addresses: Iterable[int] = DEFAULT_ADDRESSES,
@@ -86,6 +90,61 @@ def new_learn_address() -> int:
     return random.SystemRandom().randrange(0x10000, 0xFFFFF)
 
 
+# --- wider sweeps (option 4): long shots when the common formats miss ---
+
+# Small offsets around 433.92. The CMT2220LS crystal (13.52127 MHz) sets the
+# receiver centre, and cheap crystals drift; a receiver with a narrow IF can
+# ignore us if we're a bit off. All stay inside the 433 MHz ISM band.
+FREQ_OFFSETS_HZ = [433_820_000, 433_870_000, 433_920_000, 433_970_000, 434_020_000]
+
+# Wider timing grid: some toy encoders run faster/slower than the usual remotes.
+T_GRID_WIDE = [150, 200, 250, 300, 350, 400, 450, 500, 600, 750]
+
+
+def freq_sweep(t_list: Iterable[int] = (250, 350, 450),
+               data_list: Iterable[int] = (1, 2, 4, 8),
+               freqs: Iterable[int] = FREQ_OFFSETS_HZ) -> List[Dict]:
+    """Same EV1527 guesses (addr 0), repeated across a few nearby frequencies."""
+    out = []
+    for f in freqs:
+        for t in t_list:
+            for d in data_list:
+                out.append(_cand("ev1527",
+                                 f"EV1527 {f/1e6:.3f}MHz T={t}µs data={d:04b}",
+                                 freq_hz=f, address=0, data=d, t_us=t))
+    return out
+
+
+def wide_timing_sweep(addresses: Iterable[int] = (0x00000, 0xFFFFF, 0xAAAAA)) -> List[Dict]:
+    """The wide T grid, more repeats, both normal and inverted bit polarity."""
+    out = []
+    for inv in (False, True):
+        for a in addresses:
+            for t in T_GRID_WIDE:
+                for d in (1, 2, 4, 8):
+                    tag = "inv " if inv else ""
+                    out.append(_cand("ev1527",
+                                     f"{tag}EV1527 T={t}µs addr=0x{a:05X} data={d:04b}",
+                                     repeats=10, address=a, data=d, t_us=t, invert=inv))
+    return out
+
+
+def shapes_sweep() -> List[Dict]:
+    """Other frame shapes: generic 1:2 PWM, and 24-bit EV1527 (12-bit addr + 12-bit data)."""
+    out = []
+    # generic 1:2 duty PWM, a few word lengths of all-ones-ish payloads
+    for t in (250, 350, 450):
+        for bits in ("000000000001", "000000000011", "101010101010", "111111111111",
+                     "000000000000000000000001", "000000000000000000001111"):
+            out.append(_cand("pwm12", f"PWM1:2 T={t}µs bits={bits}", t_us=t, bits=bits))
+    # EV1527 with a wider data field (some chips map colour across more bits)
+    for t in (300, 400):
+        for d in (0x001, 0x002, 0x004, 0x008, 0x010, 0x020, 0x040, 0x080, 0x100, 0xFFF):
+            out.append(_cand("ev1527", f"EV1527-24 T={t}µs data=0x{d:03X}",
+                             address=0, data=d, t_us=t, data_bits=12, addr_bits=12))
+    return out
+
+
 PLANS = {
     "timing": {
         "title": "Timing scan",
@@ -111,6 +170,21 @@ PLANS = {
         "title": "Learn mode",
         "blurb": "Turn the stick OFF, hit Start, switch it ON straight away. Sends YOUR address.",
         "build": lambda ctx: learn_sweep(ctx["my_address"]),
+    },
+    "freq": {
+        "title": "Frequency sweep",
+        "blurb": "Long shot: the same code across 433.82–434.02 MHz, in case the receiver is detuned.",
+        "build": lambda ctx: freq_sweep(),
+    },
+    "wide": {
+        "title": "Wide timing",
+        "blurb": "Fast and slow timings (150–750 µs), more repeats, normal + inverted bits. Long (~15 min).",
+        "build": lambda ctx: wide_timing_sweep(),
+    },
+    "shapes": {
+        "title": "Other shapes",
+        "blurb": "Different frame shapes: generic 1:2 PWM and 24-bit EV1527 words.",
+        "build": lambda ctx: shapes_sweep(),
     },
 }
 

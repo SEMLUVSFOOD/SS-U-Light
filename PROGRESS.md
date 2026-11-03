@@ -35,6 +35,9 @@ _Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original
 
 ## Phase 2 — discovery
 - [ ] Quick terminal pass: `python3 -m tx.cli sweep all` (Ctrl+C on a reaction, note the #)
+- [x] First real TX confirmed: `tune` locked PLLC at 433.9 MHz off GPIO 4 (antenna soldered to pin 7)
+- [ ] timing / ev1527 / pt2262 / hs2303 / learn sweeps: **no stick reaction yet**
+- [ ] Wider sweeps added (`freq`, `wide`, `shapes`) — long shots before going to a real capture
 - [ ] Timing scan with the stick next to the Pi
 - [ ] Learn mode (stick off → Start → stick on)
 - [ ] EV1527 defaults / PT2262 / HS2303 sweeps

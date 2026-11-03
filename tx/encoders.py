@@ -90,6 +90,8 @@ def build(proto: str, **p) -> PulseTrain:
     proto = proto.lower()
     if proto == "ev1527":
         return ev1527(int(p["address"]), int(p["data"]), int(p.get("t_us", 350)),
+                      addr_bits=int(p.get("addr_bits", 20)),
+                      data_bits=int(p.get("data_bits", 4)),
                       sync_units=int(p.get("sync_units", 31)),
                       invert=bool(p.get("invert", False)))
     if proto in ("pt2262", "pt2260"):

@@ -85,7 +85,8 @@ def _sweep(a):
     recent = []
     try:
         for n, i, c in seq:
-            res = rpitx.send_pulses(discovery.candidate_to_train(c), c["repeats"], label=c["label"])
+            res = rpitx.send_pulses(discovery.candidate_to_train(c), c["repeats"],
+                                    freq_hz=c.get("freq_hz", rpitx.DEFAULT_FREQ_HZ), label=c["label"])
             mark = "" if res.ok else "  ✗ " + (res.error.strip().splitlines() or ["failed"])[-1]
             print(f"  {n:>7} #{i:<4} {c['label']}{mark}", flush=True)
             recent.append((n, i, c))
