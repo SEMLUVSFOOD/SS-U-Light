@@ -5,7 +5,7 @@ Everything else hands us a pulse train; we write it to a temp file and call
     sudo sendook -i -f <freq> -r <repeats> -p <pause_us> <file>
 (syntax verified against rpitx src/ook/sendook.cpp @ ee7ff57, Sept 2024).
 
-If sendook misbehaves on the Zero 2 W, fix it HERE — e.g. switch
+If sendook misbehaves on the Pi, fix it HERE — e.g. switch
 SEND_MODE to "string" to use the plain `-0/-1` chip-string mode instead.
 
 Safety guards (keep them!):
