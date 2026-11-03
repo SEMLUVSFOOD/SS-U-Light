@@ -51,11 +51,12 @@ cd ~/SS-U-Light && ./setup/install.sh
 
 `install.sh`:
 1. installs `python3-flask`
-2. clones and builds **rpitx** into `~/rpitx` (30–60 min on a Zero W; answer **y** when it asks to edit `config.txt`)
+2. builds just the two rpitx tools we need (`sendook`, `tune`) via `setup/build-rpitx.sh` (~5–10 min on a Zero W).
+   rpitx's own `install.sh` **fails on Raspberry Pi OS 13 (trixie)** because `libraspberrypi-dev` is gone; our script works around it.
 3. adds `/etc/sudoers.d/u-light`, which lets your user run **only** `sendook` and `tune` as root
 4. installs and starts the `u-light` systemd service (auto-starts on boot)
 
-Then reboot once so the `gpu_freq=250` change takes effect:
+Then reboot once so the `gpu_freq=250` / `force_turbo=1` change in `config.txt` takes effect:
 
 ```bash
 sudo reboot

@@ -1,6 +1,6 @@
 # PROGRESS — living checklist
 
-_Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original), not a 2 W**; Raspbian 13 (trixie) armv6l, SSH works, dashboard reachable; **rpitx build failed on trixie, debugging**_
+_Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original), not a 2 W**; Raspbian 13 (trixie) armv6l, SSH works, dashboard reachable; rpitx build failed on trixie → fixed with `setup/build-rpitx.sh`, waiting to run on the Pi_
 
 ## Phase 0 — everything possible without the Pi
 - [x] Repo scaffold: `tx/`, `web/`, `setup/`, `captures/`, `tests/`, docs, `codes.json`
@@ -24,7 +24,9 @@ _Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original
 - [x] Flash Raspberry Pi OS Lite (32-bit) with Imager; hostname `ulight`, SSH on, home Wi-Fi typed by me
 - [x] SSH in (`ulight.local` didn't resolve; found it by IP scan)
 - [x] `git clone` + `./setup/install.sh`: service + sudoers OK, config.txt edited
-- [ ] **rpitx build: `sendook` missing on trixie, collecting compiler errors** (fallback: Legacy/Bookworm 32-bit image)
+- [x] Diagnosed rpitx build failure on trixie: no `libraspberrypi-dev` → apt line aborts (no fftw) and
+      librpitx can't link `-lbcm_host`. librpitx has its own bcm_host functions in `rpi.c`, so we link without it.
+- [ ] Run `setup/build-rpitx.sh` on the Pi → `sendook` + `tune` in /usr/local/bin (fallback: Legacy/Bookworm 32-bit image)
 - [ ] Power off → solder the 17 cm wire to **pin 7 (GPIO 4)** → power on
 - [ ] Smoke test: `python3 -m tx.cli tone` runs without errors
 - [ ] Confirm RF with a receiver (SDR / Flipper / 433 module), if I can borrow one

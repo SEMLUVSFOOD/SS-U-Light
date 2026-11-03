@@ -16,21 +16,19 @@ say "1/5  System packages (git, Flask)"
 sudo apt-get update
 sudo apt-get install -y git python3-flask
 
-say "2/5  rpitx (builds from source — takes ~30-60 min on a Zero W)"
+say "2/5  rpitx: build just sendook + tune (~5-10 min on a Zero W)"
 if command -v sendook >/dev/null && command -v tune >/dev/null; then
-  echo "rpitx already installed: $(command -v sendook)"
+  echo "rpitx tools already installed: $(command -v sendook)"
 else
-  [ -d "$RPITX_DIR" ] || git clone https://github.com/F5OEO/rpitx.git "$RPITX_DIR"
-  echo "rpitx's own installer will ask to edit config.txt (gpu_freq=250). Answer 'y'."
-  (cd "$RPITX_DIR" && ./install.sh)
+  RPITX_DIR="$RPITX_DIR" "$REPO/setup/build-rpitx.sh"
 fi
 # rpitx's own installer keeps going after a failed compile — check for real.
 hash -r
 if ! command -v sendook >/dev/null || ! command -v tune >/dev/null; then
   echo
   echo "!! rpitx did NOT build: sendook/tune are missing."
-  echo "   Re-run its build with a log and look at the first error:"
-  echo "     cd $RPITX_DIR && ./install.sh 2>&1 | tee ~/rpitx-build.log | grep -iE 'error|fatal|unable to locate'"
+  echo "   Re-run the build with a log and look at the first error:"
+  echo "     ./setup/build-rpitx.sh 2>&1 | tee ~/rpitx-build.log | grep -iE 'error|fatal|undefined'"
   echo "   The dashboard still works, but stays in MOCK mode until this is fixed."
   exit 1
 fi
@@ -58,4 +56,4 @@ systemctl --no-pager --lines=5 status u-light.service || true
 echo
 echo "Open on your phone (same Wi-Fi):  http://$(hostname).local:8080"
 echo "Logs:   journalctl -u u-light -f"
-echo "If rpitx edited config.txt just now, reboot once:  sudo reboot"
+echo "If config.txt was edited just now (gpu_freq=250), reboot once:  sudo reboot"
