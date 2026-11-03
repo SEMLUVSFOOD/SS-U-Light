@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ff5fc8">
+<meta name="color-scheme" content="light dark">
+<title>U-Light Bridge</title>
+<link rel="icon" href="{{ url_for('static', filename='smiley.svg') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+<a class="skip" href="#main">Skip to controls</a>
+
+<header class="top">
+  <div class="brand" aria-label="U-Light bridge">
+    <span class="brand-u">u</span><span class="brand-word">light<small>bridge</small></span>
+  </div>
+  <span id="radio" class="pill" role="status">radio…</span>
+</header>
+
+<!-- HERO: the one loud thing on the page -->
+<section class="hero" aria-live="polite">
+  <div class="orb" id="orb">
+    <svg class="smiley" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="face" cx="38%" cy="30%" r="75%">
+          <stop offset="0" stop-color="#fff" stop-opacity=".95"/>
+          <stop offset=".22" stop-color="var(--glow)"/>
+          <stop offset="1" stop-color="var(--glow-deep)"/>
+        </radialGradient>
+        <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff" stop-opacity=".85"/>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="100" r="88" fill="url(#face)"/>
+      <circle cx="100" cy="100" r="88" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3"/>
+      <ellipse cx="76" cy="50" rx="44" ry="20" fill="url(#shine)" transform="rotate(-18 76 50)"/>
+      <g class="eyes" fill="var(--ink-face)">
+        <ellipse cx="72" cy="88" rx="10" ry="16"/>
+        <ellipse cx="128" cy="88" rx="10" ry="16"/>
+      </g>
+      <path d="M58 120 Q100 168 142 120" fill="none" stroke="var(--ink-face)" stroke-width="11" stroke-linecap="round"/>
+      <circle cx="54" cy="122" r="9" fill="#fff" opacity=".35"/>
+      <circle cx="146" cy="122" r="9" fill="#fff" opacity=".35"/>
+    </svg>
+  </div>
+  <p class="now"><span id="now-color">pink</span> <span id="now-mode" class="muted">· preview</span></p>
+</section>
+
+<main id="main">
+  <!-- CONTROL -->
+  <section id="tab-control" class="panel" aria-labelledby="t-control">
+    <h2 class="sr">Control</h2>
+    <div class="card">
+      <div class="card-h"><h3>Colour</h3><label class="picker">custom<input type="color" id="picker" value="#ff5fc8" aria-label="Custom colour"></label></div>
+      <div class="swatches" role="group" aria-label="Colours">
+        {% for c in colors %}
+        <button class="sw" data-color="{{ c.id }}" data-rgb="{{ c.rgb }}" style="--c:{{ c.rgb }}" aria-label="{{ c.name }}"><span>{{ c.name }}</span></button>
+        {% endfor %}
+        <button class="sw sw-off" data-color="off" data-rgb="#000000" aria-label="Off"><span>Off</span></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Effect</h3><span class="muted small" id="fx-note"></span></div>
+      <div class="seg" role="radiogroup" aria-label="Effect">
+        <button role="radio" aria-checked="true" data-fx="solid">Solid</button>
+        <button role="radio" aria-checked="false" data-fx="strobe">Strobe</button>
+        <button role="radio" aria-checked="false" data-fx="rainbow">Rainbow</button>
+        <button role="radio" aria-checked="false" data-fx="pulse">Pulse</button>
+      </div>
+      <label class="slider">
+        <span>Speed <output id="speed-out">5</output></span>
+        <input type="range" id="speed" min="1" max="10" value="5">
+      </label>
+      <div class="row">
+        <button class="btn primary" id="go">Send to stick</button>
+        <button class="btn" id="stop">Stop</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Presets</h3></div>
+      <div class="presets">
+        <button class="preset" data-preset='{"color":"pink","fx":"pulse","speed":3}'><b>Bubblegum</b><small>pink · pulse</small></button>
+        <button class="preset" data-preset='{"color":"pink","fx":"rainbow","speed":8}'><b>Sugar rush</b><small>rainbow · fast</small></button>
+        <button class="preset" data-preset='{"color":"white","fx":"strobe","speed":9}'><b>Flashbulb</b><small>white · strobe</small></button>
+        <button class="preset" data-preset='{"color":"cyan","fx":"solid","speed":5}'><b>Chrome sky</b><small>cyan · solid</small></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCOVER -->
+  <section id="tab-discover" class="panel" hidden aria-labelledby="t-discover">
+    <h2 class="sr">Protocol discovery</h2>
+    <div class="note warn">
+      <b>Experimental.</b> The Pi can't hear the stick, so this fires guesses at it while you watch.
+      It might never crack a custom format — a real capture (Codes tab) is the sure route.
+      Keep the stick right next to the Pi, at home.
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Sweep</h3></div>
+      <div class="plans" role="radiogroup" aria-label="Sweep plan">
+        {% for key, p in plans.items() %}
+        <button class="plan" role="radio" aria-checked="{{ 'true' if loop.first else 'false' }}" data-plan="{{ key }}">
+          <b>{{ p.title }}</b><small>{{ p.blurb }}</small>
+        </button>
+        {% endfor %}
+      </div>
+      <label class="slider">
+        <span>Watch time per guess <output id="dwell-out">1.5 s</output></span>
+        <input type="range" id="dwell" min="600" max="4000" step="100" value="1500">
+      </label>
+      <button class="btn primary wide" id="d-start">Start sweep</button>
+    </div>
+
+    <div class="card live" id="d-live" hidden>
+      <div class="card-h"><h3>Now sending</h3><span class="muted small" id="d-count">0 / 0</span></div>
+      <div class="progress"><i id="d-bar"></i></div>
+      <p class="cand" id="d-label">—</p>
+      <svg class="wave" id="d-wave" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <div class="row four">
+        <button class="btn" id="d-prev" aria-label="Previous guess">◀︎</button>
+        <button class="btn" id="d-pause">Pause</button>
+        <button class="btn" id="d-replay">Replay</button>
+        <button class="btn" id="d-next" aria-label="Next guess">▶︎</button>
+      </div>
+      <button class="hit" id="d-hit">That did something!</button>
+      <p class="muted small center">Logs this guess <i>and</i> the one before it to codes.json, then pauses.</p>
+    </div>
+  </section>
+
+  <!-- CODES -->
+  <section id="tab-codes" class="panel" hidden aria-labelledby="t-codes">
+    <h2 class="sr">Codes</h2>
+    <div class="card">
+      <div class="card-h"><h3>Hits</h3><span class="muted small">newest first</span></div>
+      <ul class="list" id="hits"><li class="muted">No hits yet. Go to Discover.</li></ul>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Mapped buttons</h3></div>
+      <div class="chips" id="confirmed"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Import a capture</h3></div>
+      <p class="small">Flipper Zero <code>.sub</code> (Read or Read RAW) or rtl_433 <code>.ook</code> from another fan's controller.</p>
+      <form id="import" class="row">
+        <label class="btn file">Choose file<input type="file" name="file" accept=".sub,.ook"></label>
+        <button class="btn" type="submit">Import</button>
+      </form>
+      <ul class="list" id="imports"></ul>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Radio</h3></div>
+      <button class="btn wide" id="tone">Smoke test: 1 s tone at 433.92 MHz</button>
+      <ul class="list mono" id="txlog"></ul>
+      <p class="muted small">rpitx is unfiltered and leaks harmonics. Low power, short bursts, at home only — never at a venue, never at anyone else's stick.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button role="tab" id="t-control" aria-selected="true" aria-controls="tab-control">Control</button>
+  <button role="tab" id="t-discover" aria-selected="false" aria-controls="tab-discover">Discover</button>
+  <button role="tab" id="t-codes" aria-selected="false" aria-controls="tab-codes">Codes</button>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<template id="action-options">
+  <option value="">Map to…</option>
+  {% for c in colors %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+  <option value="off">Off</option>
+  {% for fx in native_fx %}<option value="{{ fx }}">{{ fx[3:]|capitalize }} (stick native)</option>{% endfor %}
+</template>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
