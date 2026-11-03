@@ -24,8 +24,18 @@ else
   echo "rpitx's own installer will ask to edit config.txt (gpu_freq=250). Answer 'y'."
   (cd "$RPITX_DIR" && ./install.sh)
 fi
-SENDOOK="$(command -v sendook || echo /usr/local/bin/sendook)"
-TUNE="$(command -v tune || echo /usr/local/bin/tune)"
+# rpitx's own installer keeps going after a failed compile — check for real.
+hash -r
+if ! command -v sendook >/dev/null || ! command -v tune >/dev/null; then
+  echo
+  echo "!! rpitx did NOT build: sendook/tune are missing."
+  echo "   Re-run its build with a log and look at the first error:"
+  echo "     cd $RPITX_DIR && ./install.sh 2>&1 | tee ~/rpitx-build.log | grep -iE 'error|fatal|unable to locate'"
+  echo "   The dashboard still works, but stays in MOCK mode until this is fixed."
+  exit 1
+fi
+SENDOOK="$(command -v sendook)"
+TUNE="$(command -v tune)"
 
 say "3/5  Let the dashboard run ONLY sendook + tune as root (nothing else)"
 TMP="$(mktemp)"

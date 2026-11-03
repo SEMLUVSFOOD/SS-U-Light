@@ -1,6 +1,6 @@
 # PROGRESS — living checklist
 
-_Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original), not a 2 W**; SD card flashed, first boot in progress_
+_Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original), not a 2 W**; Raspbian 13 (trixie) armv6l, SSH works, dashboard reachable; **rpitx build failed on trixie, debugging**_
 
 ## Phase 0 — everything possible without the Pi
 - [x] Repo scaffold: `tx/`, `web/`, `setup/`, `captures/`, `tests/`, docs, `codes.json`
@@ -22,8 +22,9 @@ _Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original
 
 ## Phase 1 — Pi connected  ⏸ waiting for hardware
 - [x] Flash Raspberry Pi OS Lite (32-bit) with Imager; hostname `ulight`, SSH on, home Wi-Fi typed by me
-- [ ] SSH in (`ssh me@ulight.local`)
-- [ ] `git clone` + `./setup/install.sh` (rpitx build, answer **y** to config.txt), reboot
+- [x] SSH in (`ulight.local` didn't resolve; found it by IP scan)
+- [x] `git clone` + `./setup/install.sh`: service + sudoers OK, config.txt edited
+- [ ] **rpitx build: `sendook` missing on trixie, collecting compiler errors** (fallback: Legacy/Bookworm 32-bit image)
 - [ ] Power off → solder the 17 cm wire to **pin 7 (GPIO 4)** → power on
 - [ ] Smoke test: `python3 -m tx.cli tone` runs without errors
 - [ ] Confirm RF with a receiver (SDR / Flipper / 433 module), if I can borrow one
