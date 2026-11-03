@@ -16,7 +16,7 @@ say "1/5  System packages (git, Flask)"
 sudo apt-get update
 sudo apt-get install -y git python3-flask
 
-say "2/5  rpitx (builds from source — takes ~10-20 min on a Zero 2 W)"
+say "2/5  rpitx (builds from source — takes ~30-60 min on a Zero W)"
 if command -v sendook >/dev/null && command -v tune >/dev/null; then
   echo "rpitx already installed: $(command -v sendook)"
 else

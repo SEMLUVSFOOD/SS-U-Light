@@ -1,16 +1,15 @@
-# Setup — from bare Pi Zero 2 W to phone dashboard
+# Setup — from bare Pi Zero W to phone dashboard
 
-You need: Pi Zero 2 W, microSD (8 GB+), a 5 V micro-USB supply, your Mac,
+You need: Pi Zero W (the original single-core one — officially supported by rpitx), microSD (8 GB+), a 5 V micro-USB supply, your Mac,
 one ~17 cm piece of plain wire (solid-core is easiest), and a soldering iron (or a
 single header pin / Dupont jumper).
 
 ## 1. Flash the SD card (Raspberry Pi Imager)
 
 1. Install **Raspberry Pi Imager** on the Mac (raspberrypi.com/software) and insert the card.
-2. **Device:** Raspberry Pi Zero 2 W.
+2. **Device:** Raspberry Pi Zero W. (Not the 2 W — **64-bit images will not boot** on the Zero W.)
    **OS:** *Raspberry Pi OS (other) → Raspberry Pi OS Lite (32-bit)*.
-   rpitx is a 32-bit-era project, so the 32-bit image is the safest bet. Try 64-bit only
-   if 32-bit gives trouble.
+   The Zero W can only run the 32-bit image.
 3. **Storage:** your SD card → **Next → Edit settings** (OS customisation):
    - **General:** hostname `ulight`; username + password (your choice, typed by you);
      **Configure wireless LAN:** *your* home SSID and password, typed by you.
@@ -24,7 +23,7 @@ single header pin / Dupont jumper).
    *Fallback only:* if Wi-Fi refuses to join, you can set up **USB-gadget (Ethernet over USB)**
    mode and SSH in over the data micro-USB port. We'll do that together if needed.
 
-4. Put the card in the Pi and power it from the port marked **PWR**. The first boot takes 2–5 min.
+4. Put the card in the Pi and power it from the port marked **PWR**. The first boot takes 5–10 min on the single-core Zero W.
 
 ## 2. SSH in
 
@@ -52,7 +51,7 @@ cd ~/SS-U-Light && ./setup/install.sh
 
 `install.sh`:
 1. installs `python3-flask`
-2. clones and builds **rpitx** into `~/rpitx` (10–20 min; answer **y** when it asks to edit `config.txt`)
+2. clones and builds **rpitx** into `~/rpitx` (30–60 min on a Zero W; answer **y** when it asks to edit `config.txt`)
 3. adds `/etc/sudoers.d/u-light`, which lets your user run **only** `sendook` and `tune` as root
 4. installs and starts the `u-light` systemd service (auto-starts on boot)
 
@@ -75,7 +74,7 @@ Power the Pi **off** first (`sudo poweroff`, then unplug).
   Leave the other end free, and keep it straight-ish and away from the GND/5 V pins.
 - Double-check that it isn't touching pins 5, 6, 8 or 9 before powering back on.
 
-## 5. Smoke test: does rpitx work on the Zero 2 W?
+## 5. Smoke test: does rpitx work?
 
 On the Pi:
 

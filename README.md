@@ -1,7 +1,7 @@
 # SS-U-Light — phone bridge for the U-Light fan sticks
 
 Control the pink smiley **U-Light** sticks from a phone browser. No app needed.
-A bare **Raspberry Pi Zero 2 W** hosts a dashboard and transmits 433.92 MHz OOK
+A bare **Raspberry Pi Zero W** (original, not the 2 W) hosts a dashboard and transmits 433.92 MHz OOK
 straight off GPIO 4 using [rpitx](https://github.com/F5OEO/rpitx) (`sendook`).
 
 <p>
@@ -63,7 +63,7 @@ python3 -m pytest -q
 sudo -n sendook -i -f 433920000 -r 8 -p 1 /tmp/ulight-XXXX.ook
 ```
 
-If that misbehaves on the Zero 2 W, set `ULIGHT_SEND_MODE=string`. That switches to the
+If that misbehaves on the Pi, set `ULIGHT_SEND_MODE=string`. That switches to the
 plain `sendook -0 T -1 T 1110001…` chip-string mode. Everything else stays the same.
 
 Built-in limits: 433.05–434.79 MHz only, ≤1.5 s on air per burst, ≥120 ms between bursts,

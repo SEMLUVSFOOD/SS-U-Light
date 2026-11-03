@@ -1,6 +1,6 @@
 # PROGRESS — living checklist
 
-_Last updated: 2026-11-03 · Pi status: **not connected yet** (arrives this week)_
+_Last updated: 2026-11-03 · Pi status: **arrived — it's a Pi Zero W (original), not a 2 W**; SD card flashed, first boot in progress_
 
 ## Phase 0 — everything possible without the Pi
 - [x] Repo scaffold: `tx/`, `web/`, `setup/`, `captures/`, `tests/`, docs, `codes.json`
@@ -21,7 +21,7 @@ _Last updated: 2026-11-03 · Pi status: **not connected yet** (arrives this week
 - [x] Commit + push
 
 ## Phase 1 — Pi connected  ⏸ waiting for hardware
-- [ ] Flash Raspberry Pi OS Lite (32-bit) with Imager; hostname `ulight`, SSH on, home Wi-Fi typed by me
+- [x] Flash Raspberry Pi OS Lite (32-bit) with Imager; hostname `ulight`, SSH on, home Wi-Fi typed by me
 - [ ] SSH in (`ssh me@ulight.local`)
 - [ ] `git clone` + `./setup/install.sh` (rpitx build, answer **y** to config.txt), reboot
 - [ ] Power off → solder the 17 cm wire to **pin 7 (GPIO 4)** → power on
@@ -48,6 +48,6 @@ _Last updated: 2026-11-03 · Pi status: **not connected yet** (arrives this week
 - No secrets in git. Wi-Fi goes in Imager; the hotspot password is prompted at runtime.
 - Mock mode turns on automatically when `sendook` isn't installed (`ULIGHT_MOCK=1/0` forces it).
   Mock hits from `run_mock.sh` go to `/tmp/ulight-mock-codes.json`, not the real `codes.json`.
-- Possible gotcha: rpitx officially lists Zero/Zero W/Pi 3. The Zero 2 W uses the Pi 3 chip
-  family, so it *should* work. Verify at the Phase-1 smoke test before trusting anything else.
+- Hardware is a **Pi Zero W** (BCM2835, single core, 32-bit only). It is on rpitx's official
+  supported list, so the Zero 2 W uncertainty no longer applies. Expect slower boots and builds.
 - Software "pulse" is on/off breathing, not a real fade: the stick only knows the codes we find.
